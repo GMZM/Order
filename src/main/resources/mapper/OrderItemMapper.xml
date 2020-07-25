@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.order.system.dao.OrderItemMapper">
+    <resultMap id="ResultMap" type="OrderItem">
+        <id column="id" property="id"></id>
+        <result column="pid" property="pid"></result>
+        <result column="oid" property="oid"></result>
+        <result column="cstid" property="cstid"/>
+        <result column="number" property="number"/>
+        <result column="oi_totalPrice" property="totalPrice"/>
+        <collection property="productList" ofType="Product">
+            <id column="pro_id" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="price" property="price"/>
+            <result column="imageurl" property="imageurl"/>
+        </collection>
+    </resultMap>
+    <sql id="ResultCulomu">
+        id, pid, oid, cstid, number
+    </sql>
+    <select id="listByOid" parameterType="Integer" resultMap="ResultMap">
+    SELECT o.*,p.price ,p.name from orderitem o join product p on o.pid = p.id  where oid = #{oid}
+  </select>
+    <select id="listByName" parameterType="string" resultType="orderItem">
+    SELECT * FROM orderitem where name = #{name}
+  </select>
+    <select id="listByCustomerId" parameterType="Integer" resultMap="ResultMap">
+     SELECT o.id, pid, oid, cstid,o.number,o.oi_totalPrice,p.id as pro_id,name,price,imageurl from orderitem o  left join product  p on o.pid=p.id where cstid = #{id} and o.oid is null
+     </select>
+    <update id="update" parameterType="OrderItem">
+        UPDATE orderitem
+        <set>
+            <if test="number !=null">
+                number =#{number},
+            </if>
+            <if test="totalPrice !=null">
+                oi_totalPrice =#{totalPrice}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <insert id="save" parameterType="OrderItem" useGeneratedKeys="true" keyProperty="id">
+        insert into orderitem (pid,oid,cstid,number,oi_totalPrice) values (#{pid},#{oid},#{cstid},#{number},#{totalPrice})
+    </insert>
+    <select id="listOne" parameterType="Integer" resultMap="ResultMap">
+     SELECT o.id, pid, oid, cstid,o.number,p.id as pro_id,name,price,imageurl from orderitem o  left join product  p on o.pid=p.id where o.id = #{id}
+  </select>
+    <update id="updateOid">
+         update orderitem set oid =#{oid} where id = #{id}
+   </update>
+    <update id="updatePrice">
+         update orderitem set oi_totalPrice =#{result} where id = #{id}
+   </update>
+</mapper>

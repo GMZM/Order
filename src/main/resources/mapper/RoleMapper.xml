@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.order.system.dao.RoleMapper" >
+  <resultMap id="RoleRelateAuthority" type="Role">
+    <id column="id" property="id"/>
+    <result property="name" column="name"/>
+    <result property="desc_" column="desc_"/>
+    <collection property="authorityList" ofType="authority">
+      <result column="a_name" property="name"/>
+    </collection>
+  </resultMap>
+  <select id="listAll" resultMap="RoleRelateAuthority">
+    SELECT  r.*,group_concat(a.name) AS a_name from (role r join role_authority ra on  r.id=ra.rid)
+         join authority a on a.id=ra.pid GROUP BY r.name
+  </select>
+</mapper>

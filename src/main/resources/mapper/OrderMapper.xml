@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.order.system.dao.OrderMapper">
+    <resultMap id="OAndOIAndProduct" type="Order">
+        <result column="code" property="code"/>
+        <result column="status" property="status"/>
+        <result column="address" property="address"/>
+        <result column="o_totalPrice" property="totalPrice"/>
+        <result column="o_totalNumber" property="totalNumber"/>
+        <collection property="orderItems" ofType="OrderItem">
+            <result column="number" property="number"/>
+            <result column="pid" property="pid"/>
+            <result column="oi_totalPrice" property="totalPrice"/>
+            <collection property="productList" ofType="Product">
+                <id column="p_id" property="id"/>
+                <result column="name" property="name"/>
+                <result column="price" property="price"/>
+                <result column="zan" property="zan"/>
+                <result column="p_number" property="number"/>
+                <result column="p_status" property="status"/>
+                <result column="imageurl" property="imageurl"/>
+                <result column="miaoshu" property="miaoshu"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <resultMap id="OrderRelateCustomer" type="order">
+        <id property="id" column="id"/>
+        <result column="code" property="code"/>
+        <result column="address" property="address"/>
+        <result column="status" property="status"/>
+        <result column="o_totalPrice" property="totalPrice"/>
+        <result column="o_totalNumber" property="totalNumber"/>
+        <collection property="customer" ofType="customer">
+            <result property="name" column="c_name"/>
+        </collection>
+    </resultMap>
+    <select id="listAll" resultMap="OrderRelateCustomer">
+SELECT o.*,c.name as c_name from order_ o  join customer c on o.cstid = c.id
+  </select>
+    <select id="listByName" parameterType="string" resultType="order">
+    SELECT * FROM order_ where name = #{name}
+  </select>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="order">
+    insert into order_(code,address,`status`,cstid,o_totalPrice,o_totalNumber) VALUES(#{code},#{address},#{status},#{cstid},#{totalPrice},#{totalNumber})
+  </insert>
+    <update id="update" parameterType="Integer">
+    update order_ set status ='1' where id = #{id}
+  </update>
+    <select id="listOrderAndProduct" parameterType="Integer" resultMap="OAndOIAndProduct">
+SELECT
+oo.code,oo.status,oo.address,oo.o_totalPrice,oo.o_totalNumber,oo.number,oo.pid,oo.oi_totalPrice,p.id as p_id,p.name,p.price,p.zan,p.number as p_number,p.status as p_status,p.imageurl,p.miaoshu
+from (SELECT o.code,o.`status`,o.address,o.o_totalPrice,o.o_totalNumber,oi.number,oi.pid,oi.oi_totalPrice
+from order_ o left join orderitem oi on o.id=oi.oid where o.cstid = '1' ORDER BY o.code desc) oo  left join product p  on oo.pid = p.id
+  </select>
+</mapper>

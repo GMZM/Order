@@ -1,0 +1,68 @@
+server:
+  port: 8081
+  #jsp修改代码不需要重启
+  servlet:
+    jsp:
+      init-parameters:
+        development: true
+spring:
+  datasource:
+    url: jdbc:mysql://101.201.149.161:3306/order?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    #druid 数据源专有的配置
+    minIdle: 5
+    filters: stat
+    initialSize: 2
+    maxActive: 300
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 200
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    lettuce:
+      pool:
+        #最大的连接数
+        max-active: 8
+        #最大的空闲连接
+        max-idle: 8
+        #最小的空闲连接
+        min-idle: 0
+  mvc:
+    view:
+      suffix: .jsp
+      prefix: /WEB-INF/page/
+  application:
+    name: shiro
+#配置项目热部署
+  devtools:
+    restart:
+      enabled: true
+
+## 通过yaml文件配置url匹配规则
+shiro:
+  filterChainDefinitionMap:
+    /logout: logout
+    /**: authc
+    /index2: anon
+
+mybatis:
+  type-aliases-package: com.order.system.pojo
+  mapper-locations: classpath:mapper/*.xml
+
+
+pagehelper:
+  helper-dialect: mysql
+
+

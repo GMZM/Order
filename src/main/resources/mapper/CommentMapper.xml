@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.order.system.dao.CommentMapper" >
+  <resultMap id="commentRelateAdminAndProduct" type="comment">
+    <id column="id" property="id"/>
+    <result property="content" column="content"/>
+    <result property="createtime" column="createtime"/>
+    <collection property="customer" ofType="customer">
+      <result property="name" column="cs_name" />
+      <result column="cs_status" property="status"/>
+    </collection>
+    <collection property="product" ofType="product">
+      <result column="p_name" property="name"/>
+    </collection>
+  </resultMap>
+  <select id="listAll" resultMap="commentRelateAdminAndProduct">
+    SELECT c.*,cs.name as cs_name,cs.status as cs_status,p.name as p_name from comment c  join customer cs on c.cstid = cs.id  join product p on c.pid=p.id
+  </select>
+  <select id="listByName" parameterType="string" resultType="Comment">
+    SELECT * FROM comment where name = #{name}
+  </select>
+</mapper>
